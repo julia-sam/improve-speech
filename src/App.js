@@ -97,60 +97,72 @@ function App() {
     };
 
     const fetchPitch = async (formData) => {
-        try {
-            const response = await fetch('/api/analyze_pitch', {
-                method: 'POST',
-                body: formData,
-            });
+      try {
+          const response = await fetch('/api/analyze_pitch', {
+              method: 'POST',
+              body: formData,
+          });
+  
+          if (!response.ok) {
+              throw new Error(`Server responded with status ${response.status}`);
+          }
+  
+          const result = await response.json();
+          console.log('Pitch analysis result:', result); // Debugging
+  
+          // Check if result is an array of { time, frequency }
+          if (Array.isArray(result) && result.every((item) => 'time' in item && 'frequency' in item)) {
+              setPitchAnalysis(result); // Update the pitchAnalysis state
+          } else {
+              console.error('Invalid pitch analysis format', result);
+          }
+      } catch (error) {
+          console.error('Error analyzing pitch:', error);
+          alert('Error analyzing pitch. Please try again.');
+      }
+  };  
 
-            if (!response.ok) {
-                throw new Error(`Server responded with status ${response.status}`);
-            }
+  const pitchData = {
+    labels: pitchAnalysis.map((point) => point.time.toFixed(2)), // Extract time for x-axis
+    datasets: [
+        {
+            label: "Pitch (Hz)",
+            data: pitchAnalysis.map((point) => point.frequency), // Extract frequency for y-axis
+            borderColor: "#ff4757",
+            backgroundColor: "rgba(255, 71, 87, 0.2)",
+            borderWidth: 2,
+            fill: false, // Disable filler to avoid continuous expansion
+            pointRadius: 0,
+            lineTension: 0.1,
+        },
+    ],
+};
 
-            const result = await response.json();
-            console.log('Pitch analysis result:', result);
+console.log("Pitch Analysis:", pitchAnalysis);
+console.log("Chart Data:", pitchData);
 
-            setPitchAnalysis(result.pitches || []);
-        } catch (error) {
-            console.error('Error analyzing pitch:', error);
-            alert('Error analyzing pitch. Please try again.');
-        }
-    };
-
-    const pitchData = {
-        labels: pitchAnalysis.map((_, index) => `Frame ${index}`),
-        datasets: [
-            {
-                label: 'Pitch (Hz)',
-                data: pitchAnalysis,
-                borderColor: '#ff4757',
-                backgroundColor: 'rgba(255, 71, 87, 0.2)',
-                borderWidth: 2,
-                fill: true,
-                pointRadius: 0,
-                lineTension: 0.1,
-            },
-        ],
-    };
-
-    const chartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            x: {
-                title: {
-                    display: true,
-                    text: 'Frames',
-                },
-            },
-            y: {
-                title: {
-                    display: true,
-                    text: 'Frequency (Hz)',
-                },
+const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+        x: {
+            title: {
+                display: true,
+                text: "Time (s)",
             },
         },
-    };
+        y: {
+            title: {
+                display: true,
+                text: "Frequency (Hz)",
+            },
+            min: 50, // Minimum frequency value
+            max: 500, // Maximum frequency value (adjust based on expected pitch range)
+        },
+    },
+};
+
+
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -180,10 +192,12 @@ function App() {
                         </div>
                     )}
                     {pitchAnalysis.length > 0 && (
-                        <div className="mt-8 w-full h-64">
-                            <h2 className="text-2xl font-semibold">Pitch Analysis:</h2>
+                      <div className="mt-8 w-full h-64">
+                          <h2 className="text-2xl font-semibold">Pitch Analysis:</h2>
+                          <div className="chart-container" style={{ position: "relative", height: "400px", width: "100%" }}>
                             <Line data={pitchData} options={chartOptions} />
-                        </div>
+                          </div>
+                      </div>
                     )}
                 </div>
             </main>
