@@ -162,45 +162,76 @@ const chartOptions = {
     },
 };
 
-
-
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="w-full max-w-5xl">
-                <h1 className="text-3xl font-bold">Pronunciation Improvement</h1>
-                <div className="mt-4">
-                    <button
-                        onClick={handleStartRecording}
-                        disabled={recording}
-                        className="mr-4 px-4 py-2 bg-green-500 text-white rounded"
-                        >
-                            Start Recording
-                        </button>
-                        <button
-                            onClick={handleStopRecording}
-                            disabled={!recording}
-                            className="px-4 py-2 bg-red-500 text-white rounded"
-                        >
-                            Stop Recording
-                        </button>
-                    </div>
-                    {audioURL && (
-                        <div className="mt-8">
-                            <h2 className="text-2xl font-semibold">Recorded Audio:</h2>
-                            <audio controls src={audioURL} className="mt-4"></audio>
-                            <div ref={waveformRef} className="mt-8"></div>
-                        </div>
-                    )}
-                    {pitchAnalysis.length > 0 && (
-                      <div className="mt-8 w-full h-64">
-                          <h2 className="text-2xl font-semibold">Pitch Analysis:</h2>
-                          <div className="chart-container" style={{ position: "relative", height: "400px", width: "100%" }}>
-                            <Line data={pitchData} options={chartOptions} />
-                          </div>
-                      </div>
-                    )}
+        <main className="flex flex-col items-center justify-center min-h-screen">
+    {/* Header Section */}
+    <div className="flex items-center justify-center mb-12 w-full">
+        {/* Image Section */}
+        <div className="h-auto w-96 flex-shrink-0">
+            <img
+                src="/psycholing.jpeg"
+                alt="Header"
+                className="h-auto w-full object-contain rounded-lg"
+            />
+        </div>
+
+        {/* Title Section */}
+        <div className="ml-6">
+            <h1 className="text-4xl font-bold text-gray-800">
+                Improve Your Pronunciation
+            </h1>
+        </div>
+    </div>
+
+    {/* Main Content */}
+    <div className="w-full max-w-5xl mt-8">
+        {/* Button Section */}
+        <div className="mt-4 flex items-center justify-center">
+            <button
+                onClick={handleStartRecording}
+                disabled={recording}
+                className={`mr-4 px-4 py-2 rounded-lg text-white ${
+                    recording ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-700'
+                }`}
+            >
+                Start Recording
+            </button>
+            <button
+                onClick={handleStopRecording}
+                disabled={!recording}
+                className={`px-4 py-2 rounded-lg text-white ${
+                    !recording ? 'bg-gray-500 cursor-not-allowed' : 'bg-red-800 hover:bg-red-700'
+                }`}
+            >
+                Stop Recording
+            </button>
+        </div>
+
+        {/* Recorded Audio Section */}
+        {audioURL && (
+            <div className="mt-8">
+                <h2 className="text-2xl font-semibold text-center">Recorded Audio:</h2>
+                <audio controls src={audioURL} className="mt-4"></audio>
+                <div ref={waveformRef} className="mt-8"></div>
+            </div>
+        )}
+
+        {/* Pitch Analysis Section */}
+        {pitchAnalysis.length > 0 && (
+            <div className="mt-8 w-full h-64">
+                <h2 className="text-2xl font-semibold text-center">Pitch Analysis:</h2>
+                <div
+                    className="relative h-96 w-full overflow-hidden"
+                    style={{ position: "relative", height: "400px", width: "100%" }}
+                >
+                    <Line data={pitchData} options={chartOptions} />
                 </div>
-            </main>
+            </div>
+        )}
+    </div>
+</main>
+
+  
         );
     }
     
