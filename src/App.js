@@ -16,6 +16,41 @@ function App() {
     const waveformRef = useRef(null);
     const wavesurferRef = useRef(null);
     const ffmpegRef = useRef(new FFmpeg({ log: true }));
+    const [text, setText] = useState("");
+    const [apiKey, setApiKey] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const handleGenerateAudio = async () => {
+        if (!text || !apiKey) {
+            alert("Please provide text and an OpenAI API key.");
+            return;
+        }
+    
+        setLoading(true);
+    
+        try {
+            const response = await fetch("/api/text_to_speech", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ text, api_key: apiKey }),
+            });
+    
+            if (!response.ok) {
+                throw new Error(`Server responded with status ${response.status}`);
+            }
+    
+            const blob = await response.blob();
+            const url = URL.createObjectURL(blob);
+            setAudioURL(url);
+        } catch (error) {
+            console.error("Error generating audio:", error);
+            alert("Error generating audio. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };    
 
     useEffect(() => {
         if (audioURL && waveformRef.current) {
@@ -96,6 +131,7 @@ function App() {
         return new Blob([wavData.buffer], { type: 'audio/wav' });
     };
 
+
     const fetchPitch = async (formData) => {
       try {
           const response = await fetch('/api/analyze_pitch', {
@@ -162,79 +198,121 @@ const chartOptions = {
     },
 };
 
-    return (
-        <main className="flex flex-col items-center justify-center min-h-screen">
-    {/* Header Section */}
-    <div className="flex items-center justify-center mb-12 w-full">
-        {/* Image Section */}
-        <div className="h-auto w-96 flex-shrink-0">
-            <img
-                src="/psycholing.jpeg"
-                alt="Header"
-                className="h-auto w-full object-contain rounded-lg"
-            />
-        </div>
+return (
+    <main className="flex flex-col items-center justify-start min-h-screen bg-gray-100 m-0 p-0">
+        {/* Header Section */}
+        <header className="w-full bg-lightTeal pb-8 shadow-lg">
+            <div className="flex flex-col items-center">
+                {/* Image Section */}
+                <div className="h-auto w-48 flex-shrink-0 mt-8">
+                    <img
+                        src="/psycholing.jpeg"
+                        alt="Header"
+                        className="h-auto w-full object-contain rounded-full border-4 border-offWhite"
+                    />
+                </div>
 
-        {/* Title Section */}
-        <div className="ml-6">
-            <h1 className="text-4xl font-bold text-gray-800">
-                Improve Your Pronunciation
-            </h1>
-        </div>
-    </div>
-
-    {/* Main Content */}
-    <div className="w-full max-w-5xl mt-8">
-        {/* Button Section */}
-        <div className="mt-4 flex items-center justify-center">
-            <button
-                onClick={handleStartRecording}
-                disabled={recording}
-                className={`mr-4 px-4 py-2 rounded-lg text-white ${
-                    recording ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-800 hover:bg-blue-700'
-                }`}
-            >
-                Start Recording
-            </button>
-            <button
-                onClick={handleStopRecording}
-                disabled={!recording}
-                className={`px-4 py-2 rounded-lg text-white ${
-                    !recording ? 'bg-gray-500 cursor-not-allowed' : 'bg-red-800 hover:bg-red-700'
-                }`}
-            >
-                Stop Recording
-            </button>
-        </div>
-
-        {/* Recorded Audio Section */}
-        {audioURL && (
-            <div className="mt-8">
-                <h2 className="text-2xl font-semibold text-center">Recorded Audio:</h2>
-                <audio controls src={audioURL} className="mt-4"></audio>
-                <div ref={waveformRef} className="mt-8"></div>
-            </div>
-        )}
-
-        {/* Pitch Analysis Section */}
-        {pitchAnalysis.length > 0 && (
-            <div className="mt-8 w-full h-64">
-                <h2 className="text-2xl font-semibold text-center">Pitch Analysis:</h2>
-                <div
-                    className="relative h-96 w-full overflow-hidden"
-                    style={{ position: "relative", height: "400px", width: "100%" }}
-                >
-                    <Line data={pitchData} options={chartOptions} />
+                {/* Title Section */}
+                <div className="mt-6 text-center">
+                    <h1 className="text-5xl font-extrabold text-darkGray tracking-wide">
+                        Improve Your Pronunciation
+                    </h1>
                 </div>
             </div>
-        )}
-    </div>
-</main>
+        </header>
 
-  
-        );
-    }
+        {/* Main Content Wrapper */}
+        <div className="w-full max-w-4xl p-4">
+            {/* Text-to-Speech Section */}
+            <div className="bg-offWhite shadow-md rounded-lg p-8 mt-8">
+                <h3 className="text-xl font-semibold text-darkGray mb-4 text-center">Text-to-Speech</h3>
+                <div className="space-y-4">
+                    <input
+                        type="text"
+                        placeholder="Enter your OpenAI API Key"
+                        value={apiKey}
+                        onChange={(e) => setApiKey(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lightTeal"
+                    />
+                    <textarea
+                        rows="4"
+                        placeholder="Enter text to convert to speech"
+                        value={text}
+                        onChange={(e) => setText(e.target.value)}
+                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lightTeal"
+                    />
+                </div>
+                <div className="mt-4 text-center">
+                    <button
+                        onClick={handleGenerateAudio}
+                        disabled={loading}
+                        className={`px-6 py-2 rounded-lg text-white ${
+                            loading ? 'bg-lightTeal cursor-not-allowed' : 'bg-mutedRed hover:bg-red-500'
+                        }`}
+                    >
+                        {loading ? 'Generating...' : 'Generate Audio'}
+                    </button>
+                </div>
+            </div>
+
+            {/* Recording Section */}
+            <div className="mt-4 flex items-center justify-center gap-4">
+                <button
+                    onClick={handleStartRecording}
+                    disabled={recording}
+                    className={`flex items-center px-6 py-2 rounded-full font-semibold text-white gap-2 ${
+                        recording ? 'bg-lightTeal cursor-not-allowed' : 'bg-mutedRed hover:bg-red-500'
+                    }`}
+                >
+                    Start Recording
+                </button>
+                <button
+                    onClick={handleStopRecording}
+                    disabled={!recording}
+                    className={`flex items-center px-6 py-2 rounded-full font-semibold text-white gap-2 ${
+                        !recording ? 'bg-lightTeal cursor-not-allowed' : 'bg-mutedRed hover:bg-red-500'
+                    }`}
+                >
+                    Stop Recording
+                </button>
+            </div>
+
+            {/* Generated Audio Section */}
+            {audioURL && (
+                <div className="bg-offWhite shadow-md rounded-lg p-8 mt-8">
+                    <h2 className="text-2xl font-semibold text-center mb-4 text-darkGray">Generated Audio</h2>
+                    <audio
+                        controls
+                        src={audioURL}
+                        className="w-full rounded-lg border shadow-md focus:outline-none focus:ring-2 focus:ring-lightTeal"
+                    ></audio>
+
+                    {/* Waveform Visualization */}
+                    <div
+                        ref={waveformRef}
+                        className="waveform-container h-24 w-full border border-gray-300 bg-white rounded-lg mt-6"
+                    ></div>
+                </div>
+            )}
+
+            {/* Pitch Analysis Section */}
+            {pitchAnalysis.length > 0 && (
+                <div className="bg-offWhite shadow-md rounded-lg p-8 mt-8">
+                    <h2 className="text-2xl font-semibold text-center mb-6 text-darkGray">Pitch Analysis</h2>
+                    <div
+                        className="relative h-96 w-full overflow-hidden"
+                        style={{ position: "relative", height: "400px", width: "100%" }}
+                    >
+                        <Line data={pitchData} options={chartOptions} />
+                    </div>
+                </div>
+            )}
+        </div>
+    </main>
+);
+
+}
     
-    export default App;
+export default App;
     
  
