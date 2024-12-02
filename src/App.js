@@ -199,69 +199,91 @@ const chartOptions = {
 };
 
 return (
-    <main className="flex flex-col items-center justify-start min-h-screen bg-gray-100 m-0 p-0">
+    <main className="flex flex-col min-h-screen bg-textWhite">
         {/* Header Section */}
-        <header className="w-full bg-lightTeal pb-8 shadow-lg">
-            <div className="flex flex-col items-center">
-                {/* Image Section */}
-                <div className="h-auto w-48 flex-shrink-0 mt-8">
-                    <img
-                        src="/psycholing.jpeg"
-                        alt="Header"
-                        className="h-auto w-full object-contain rounded-full border-4 border-offWhite"
-                    />
-                </div>
-
-                {/* Title Section */}
-                <div className="mt-6 text-center">
-                    <h1 className="text-5xl font-extrabold text-darkGray tracking-wide">
-                        Improve Your Pronunciation
-                    </h1>
-                </div>
+        <header className="w-full bg-textWhite py-4">
+            <div className="flex items-center justify-between max-w-full px-6">
+                <div className="text-xl font-bold text-textBlack">Pronunciation Improvement</div>
+                <nav className="flex items-center space-x-6">
+                    <button className="px-4 py-2 rounded-lg bg-textWhite text-textBlack font-semibold border">
+                        Sign In
+                    </button>
+                    <button className="px-4 py-2 rounded-lg bg-brightYellow text-textBlack font-semibold">
+                        Sign Up
+                    </button>
+                </nav>
             </div>
         </header>
 
-        {/* Main Content Wrapper */}
-        <div className="w-full max-w-4xl p-4">
-            {/* Text-to-Speech Section */}
-            <div className="bg-offWhite shadow-md rounded-lg p-8 mt-8">
-                <h3 className="text-xl font-semibold text-darkGray mb-4 text-center">Text-to-Speech</h3>
-                <div className="space-y-4">
-                    <input
-                        type="text"
-                        placeholder="Enter your OpenAI API Key"
-                        value={apiKey}
-                        onChange={(e) => setApiKey(e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lightTeal"
-                    />
-                    <textarea
-                        rows="4"
-                        placeholder="Enter text to convert to speech"
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-lightTeal"
-                    />
+        {/* Hero Section */}
+        <section className="relative w-full bg-textWhite py-20">
+            <div className="absolute -top-10 -left-20 bg-brightYellow rounded-full h-64 w-64 opacity-50"></div>
+            <div className="absolute top-10 right-10 bg-turquoise rounded-full h-48 w-48 opacity-50"></div>
+            <div className="flex flex-col lg:flex-row items-center justify-center mx-auto max-w-screen-xl px-6">
+                <div className="max-w-xl space-y-6">
+                    <h1 className="text-5xl lg:text-6xl font-bold text-textBlack leading-tight">
+                        Record, Analyze, and Improve Your Pronunciation.
+                    </h1>
+                    <p className="text-lg text-textBlack">
+                        Compare your pronunciation to a native one using AI-powered tools.
+                    </p>
+                    <div className="flex flex-col space-y-4">
+                        {/* API Key Input */}
+                        <input
+                            type="text"
+                            placeholder="Enter your OpenAI API Key"
+                            value={apiKey}
+                            onChange={(e) => setApiKey(e.target.value)}
+                            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brightYellow w-full"
+                        />
+                        
+                        {/* Text to Convert to Speech */}
+                        <textarea
+                            rows="4"
+                            placeholder="Enter text to convert to speech"
+                            value={text}
+                            onChange={(e) => setText(e.target.value)}
+                            className="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-brightYellow w-full"
+                        />
+                        
+                        {/* Generate Audio Button */}
+                        <button
+                            onClick={handleGenerateAudio}
+                            disabled={loading}
+                            className={`px-6 py-2 rounded-lg text-textWhite ${
+                                loading ? 'bg-lightGray cursor-not-allowed' : 'bg-brightYellow hover:bg-textBlack'
+                            }`}
+                        >
+                            {loading ? 'Generating...' : 'Generate Audio'}
+                        </button>
+                    </div>
                 </div>
-                <div className="mt-4 text-center">
-                    <button
-                        onClick={handleGenerateAudio}
-                        disabled={loading}
-                        className={`px-6 py-2 rounded-lg text-white ${
-                            loading ? 'bg-lightTeal cursor-not-allowed' : 'bg-mutedRed hover:bg-red-500'
-                        }`}
-                    >
-                        {loading ? 'Generating...' : 'Generate Audio'}
-                    </button>
+                
+                {/* Hero Image */}
+                <div className="relative mt-8 lg:mt-0">
+                    <div className="absolute -top-15 -left-20 bg-turquoise rounded-full h-25 w-25"></div>
+                    <img
+                        src="/psycholing.png"
+                        alt="Hero"
+                        className="w-[50rem] h-auto rounded-lg"
+                        style={{ backgroundColor: 'transparent' }}
+                    />
                 </div>
             </div>
+        </section>
 
-            {/* Recording Section */}
-            <div className="mt-4 flex items-center justify-center gap-4">
+        {/* Divider Line */}
+        <div className="w-full border-t border-gray-300 my-6"></div>
+
+        {/* Recording Section */}
+        <section className="max-w-screen-xl mx-auto px-6 py-12">
+            <h2 className="text-2xl font-semibold text-center mb-6 text-textBlack">Record Yourself</h2>
+            <div className="flex items-center justify-center gap-4">
                 <button
                     onClick={handleStartRecording}
                     disabled={recording}
-                    className={`flex items-center px-6 py-2 rounded-full font-semibold text-white gap-2 ${
-                        recording ? 'bg-lightTeal cursor-not-allowed' : 'bg-mutedRed hover:bg-red-500'
+                    className={`flex items-center px-6 py-2 rounded-full font-semibold text-textWhite gap-2 ${
+                        recording ? 'bg-lightGray cursor-not-allowed' : 'bg-brightYellow hover:bg-textBlack'
                     }`}
                 >
                     Start Recording
@@ -269,45 +291,60 @@ return (
                 <button
                     onClick={handleStopRecording}
                     disabled={!recording}
-                    className={`flex items-center px-6 py-2 rounded-full font-semibold text-white gap-2 ${
-                        !recording ? 'bg-lightTeal cursor-not-allowed' : 'bg-mutedRed hover:bg-red-500'
+                    className={`flex items-center px-6 py-2 rounded-full font-semibold text-textWhite gap-2 ${
+                        !recording ? 'bg-lightGray cursor-not-allowed' : 'bg-brightYellow hover:bg-textBlack'
                     }`}
                 >
                     Stop Recording
                 </button>
             </div>
+        </section>
 
-            {/* Generated Audio Section */}
-            {audioURL && (
-                <div className="bg-offWhite shadow-md rounded-lg p-8 mt-8">
-                    <h2 className="text-2xl font-semibold text-center mb-4 text-darkGray">Generated Audio</h2>
+        {/* Divider Line */}
+        <div className="w-full border-t border-gray-300 my-6"></div>
+
+        {/* Waveform and Pitch Analysis Section */}
+        {(audioURL || pitchAnalysis.length > 0) && (
+            <section className="max-w-screen-lg mx-auto px-6 py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    {/* Waveform Visualization */}
+                    <div className="bg-white rounded-lg p-6 border border-gray-300">
+                        <h2 className="text-xl font-semibold text-center text-textBlack mb-4">Waveform</h2>
+                        <div
+                            ref={waveformRef}
+                            className="h-32 w-[500px] bg-lightGray rounded-lg"
+                        ></div>
+                    </div>
+                    
+                    {/* Pitch Plot */}
+                    {pitchAnalysis.length > 0 && (
+                        <div className="bg-white rounded-lg p-6 border border-gray-300">
+                            <h2 className="text-xl font-semibold text-center text-textBlack mb-4">Pitch Analysis</h2>
+                            <div
+                                className="relative h-60 w-[400px]"
+                                style={{ position: "relative", height: "200px", width: "100%" }}
+                            >
+                                <Line data={pitchData} options={chartOptions} />
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </section>
+        )}
+
+        {/* Generated Audio Section */}
+        {audioURL && (
+            <section className="w-full mx-auto px-6 py-12">
+                <div className="max-w-md mx-auto bg-white p-8 rounded-lg border border-gray-300">
+                    <h2 className="text-2xl font-semibold text-center mb-4 text-textBlack">Generated Audio</h2>
                     <audio
                         controls
                         src={audioURL}
-                        className="w-full rounded-lg border shadow-md focus:outline-none focus:ring-2 focus:ring-lightTeal"
+                        className="w-full rounded-lg border shadow-md focus:outline-none focus:ring-2 focus:ring-brightYellow"
                     ></audio>
-
-                    {/* Waveform Visualization */}
-                    <div
-                        ref={waveformRef}
-                        className="waveform-container h-24 w-full border border-gray-300 bg-white rounded-lg mt-6"
-                    ></div>
                 </div>
-            )}
-
-            {/* Pitch Analysis Section */}
-            {pitchAnalysis.length > 0 && (
-                <div className="bg-offWhite shadow-md rounded-lg p-8 mt-8">
-                    <h2 className="text-2xl font-semibold text-center mb-6 text-darkGray">Pitch Analysis</h2>
-                    <div
-                        className="relative h-96 w-full overflow-hidden"
-                        style={{ position: "relative", height: "400px", width: "100%" }}
-                    >
-                        <Line data={pitchData} options={chartOptions} />
-                    </div>
-                </div>
-            )}
-        </div>
+            </section>
+        )}
     </main>
 );
 
