@@ -8,6 +8,7 @@ module.exports = {
                 textWhite: '#FFFFFF',
                 brightYellow: '#FFD700',
                 lightGray: '#F4F4F4',
+                darkGray: '#A9A9A9',
                 turquoise: '#8DC6BF'
             },
         },

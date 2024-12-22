@@ -63,11 +63,11 @@ def text_to_speech():
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as temp_audio:
             speech_file_path = Path(temp_audio.name)
 
-        # Generate speech using OpenAI's TTS API
+        # Generate speech 
         response = client.audio.speech.create(
-            model="tts-1",  # Use the model optimized for real-time applications
-            voice="alloy",  # Use the desired voice
-            input=text      # Provide the text input
+            model="tts-1",  
+            voice="alloy",  
+            input=text     
         )
 
         # Stream the audio content into the temporary file
